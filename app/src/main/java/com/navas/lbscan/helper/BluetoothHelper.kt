@@ -1,4 +1,6 @@
 package com.navas.lbscan.helper
 
-class BluetoothHelper {
+import android.content.Context
+
+class BluetoothHelper(val context: Context) {
 }
