@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
-        <variable
-            name="viewModel"
-            type="com.navas.lbscan.fragments.home.HomeViewModel" />
-    </data>
-
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.home.HomeFragment">
+
+        <include
+            layout="@layout/circular_progress_bar"
+            android:id="@+id/loading" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            tools:listitem="@layout/bluetooth_row_adapter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -19,7 +24,5 @@
             android:src="@drawable/ic_search_white"
             android:layout_gravity="end|bottom"
             android:layout_height="wrap_content"/>
-
-        <include layout="@layout/circular_progress_bar" app:isVisible="@{viewModel.isLoading()}"/>
     </FrameLayout>
 </layout>
