@@ -1,16 +1,15 @@
 package com.navas.lbscan.fragments.home
 
 import com.navas.lbscan.helper.BluetoothHelper
-import com.navas.lbscan.helper.LBCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class HomeModel(private val bluetoothHelper: BluetoothHelper) {
 
-    suspend fun searchDevices(callback: LBCallback):HomeViewState = withContext(Dispatchers.Default){
-        if(bluetoothHelper.isBluetoothActived()){
-            bluetoothHelper.startLBScan(callback)
-            HomeViewState.StartScan
+    suspend fun searchDevices(): HomeViewState = withContext(Dispatchers.Default){
+        if(bluetoothHelper.isBluetoothActived()) {
+            val devices = bluetoothHelper.startLBScanAsync().await()
+            HomeViewState.Data(devices)
         }else{
             HomeViewState.InactiveBluetooth
         }

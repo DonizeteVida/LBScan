@@ -12,9 +12,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.core.extensions.byValue
 import com.navas.lbscan.core.recycler_adapter.BluetoothDevicesAdapter
 import com.navas.lbscan.databinding.HomeFragmentBinding
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
@@ -52,7 +54,7 @@ class HomeFragment : Fragment() {
             is HomeViewState.Initial->{
 
             }
-            is HomeViewState.Success->{
+            is HomeViewState.Data->{
 
             }
             is HomeViewState.Failed->{
@@ -69,7 +71,7 @@ class HomeFragment : Fragment() {
         binding.loading.root.byValue(it)
     }
 
-    private val lbDevicesObserver = Observer<List<BluetoothDevice>>{ devices->
+    private val lbDevicesObserver = Observer<List<BDevice>>{ devices->
         binding.recyclerView.takeIf {
             val result = (it.adapter is BluetoothDevicesAdapter)
             !result

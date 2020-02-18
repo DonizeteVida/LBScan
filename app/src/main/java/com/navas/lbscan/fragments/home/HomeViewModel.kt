@@ -1,10 +1,10 @@
 package com.navas.lbscan.fragments.home
 
-import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.core.extensions.init
 import com.navas.lbscan.core.extensions.pv
 import kotlinx.coroutines.launch
@@ -12,23 +12,26 @@ import kotlinx.coroutines.launch
 class HomeViewModel(private val homeModel: HomeModel) : ViewModel() {
 
     private val _homeViewState = MutableLiveData<HomeViewState>().init(HomeViewState.Initial)
-    private val _lbDevices = MutableLiveData<MutableList<BluetoothDevice>>().init(mutableListOf())
+    private val _lbDevices = MutableLiveData<List<BDevice>>().init(mutableListOf())
     private val _isLoading = MutableLiveData<Boolean>().init(false)
 
     val homeViewState:LiveData<HomeViewState> get() = _homeViewState
-    val lbDevices: LiveData<MutableList<BluetoothDevice>> get() = _lbDevices
+    val lbDevices: LiveData<List<BDevice>> get() = _lbDevices
     val isLoading:LiveData<Boolean> get() = _isLoading
 
     fun searchDevices() = viewModelScope.launch {
+        _isLoading.pv(true)
+
         try{
-            _isLoading.pv(true)
-            val state = homeModel.searchDevices { bluetoothDevice, i, bytes ->
-                takeIf { _lbDevices.value?.contains(bluetoothDevice)?.not() ?: false}?.let {
-                    _lbDevices.value?.add(bluetoothDevice)
+            when(val state = homeModel.searchDevices()){
+                is HomeViewState.Data->{
+                    _lbDevices.pv(state.data)
                 }
-                _lbDevices.value = _lbDevices.value
+                is HomeViewState.InactiveBluetooth->{
+                    _homeViewState.pv(state)
+                }
             }
-            _homeViewState.pv(state)
+
         }catch (t: Throwable){
             _homeViewState.pv(HomeViewState.Failed(t))
         }finally {
