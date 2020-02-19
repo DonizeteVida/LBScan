@@ -3,7 +3,6 @@ package com.navas.lbscan.fragments.home
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,21 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.navas.lbscan.R
 import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.core.extensions.byValue
 import com.navas.lbscan.core.recycler_adapter.BluetoothDevicesAdapter
 import com.navas.lbscan.databinding.HomeFragmentBinding
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: HomeFragmentBinding
 
     companion object{
         private const val REQUEST_ENABLE_BLUETOOTH = 1
+        private const val DEVICE_PARCEALIZE = "device"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -76,7 +77,7 @@ class HomeFragment : Fragment() {
             val result = (it.adapter is BluetoothDevicesAdapter)
             !result
         }?.apply {
-            adapter = BluetoothDevicesAdapter(mutableListOf())
+            adapter = BluetoothDevicesAdapter(mutableListOf(), this@HomeFragment)
         }
 
         (binding.recyclerView.adapter as BluetoothDevicesAdapter).setData(devices)
@@ -101,6 +102,10 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onConnectRequest(device: BDevice) {
+        findNavController().navigate(HomeFragmentDirections.homeToDeviceInformations(device))
     }
 
     private fun message(m: ()-> String){

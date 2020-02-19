@@ -1,6 +1,7 @@
 package com.navas.lbscan.core.application
 
 import android.app.Application
+import com.navas.lbscan.fragments.device_informations.deviceInformationsModule
 import com.navas.lbscan.fragments.home.homeModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -14,7 +15,8 @@ class LBScanApplication : Application() {
             androidContext(this@LBScanApplication)
             modules(
                 listOf(
-                    homeModule
+                    homeModule,
+                    deviceInformationsModule
                 )
             )
         }

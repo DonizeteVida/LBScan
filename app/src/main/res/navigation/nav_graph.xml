@@ -9,5 +9,18 @@
         android:id="@+id/homeFragment"
         android:name="com.navas.lbscan.fragments.home.HomeFragment"
         android:label="LBSCan -> Navas"
-        tools:layout="@layout/home_fragment" />
+        tools:layout="@layout/home_fragment" >
+        <action
+            android:id="@+id/homeToDeviceInformations"
+            app:destination="@id/deviceInformationsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deviceInformationsFragment"
+        android:name="com.navas.lbscan.fragments.device_informations.DeviceInformationsFragment"
+        android:label="Device Information"
+        tools:layout="@layout/device_informations_fragment" >
+        <argument
+            android:name="device"
+            app:argType="com.navas.lbscan.core.entities.BDevice" />
+    </fragment>
 </navigation>

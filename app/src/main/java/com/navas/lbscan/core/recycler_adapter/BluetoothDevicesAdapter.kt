@@ -7,7 +7,8 @@ import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.databinding.BluetoothRowAdapterBinding
 
 class BluetoothDevicesAdapter(
-    private var list: List<BDevice>
+    private var list: List<BDevice>,
+    private val callback: Callback
 ) : RecyclerView.Adapter<BluetoothDevicesAdapter.BluetoothDevicesHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -17,18 +18,35 @@ class BluetoothDevicesAdapter(
 
     override fun onBindViewHolder(holder: BluetoothDevicesHolder, pos: Int) = holder.bindView(list[pos])
 
-    class BluetoothDevicesHolder(
-        private val binding: BluetoothRowAdapterBinding
-    ) : RecyclerView.ViewHolder(binding.root){
+    inner class BluetoothDevicesHolder(private val binding: BluetoothRowAdapterBinding) : RecyclerView.ViewHolder(binding.root){
+
         fun bindView(device: BDevice){
-            val bluetoothDevice = device.bluetoothDevice
-            binding.macAddress.text = bluetoothDevice.address
-            binding.name.text = bluetoothDevice.name ?: "Sem nome"
+
+            device.apply {
+                binding.macAddress.text = device.bluetoothDevice.address
+                binding.name.text = device.bluetoothDevice.name ?: "Sem nome"
+                binding.strength.text = "${device.rssi}"
+
+                binding.apply {
+                    connectButton.setOnClickListener {
+                        callback.onConnectRequest(device)
+                    }
+                }
+            }
+
         }
+
     }
 
     fun setData(list: List<BDevice>){
-        this.list = list
+        val orderedList = list.sortedByDescending {
+            it.rssi
+        }
+        this.list = orderedList
         notifyDataSetChanged()
+    }
+
+    interface Callback{
+        fun onConnectRequest(device: BDevice)
     }
 }

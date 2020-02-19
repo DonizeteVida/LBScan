@@ -1,8 +1,11 @@
 package com.navas.lbscan.core.entities
 
 import android.bluetooth.BluetoothDevice
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class BDevice(
     val bluetoothDevice: BluetoothDevice,
-    var scanCount : Int = 0
-)
+    val rssi: Int
+) : Parcelable
