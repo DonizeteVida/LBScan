@@ -15,6 +15,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.navas.lbscan.R
 import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.core.extensions.byValue
+import com.navas.lbscan.core.extensions.inside
+import com.navas.lbscan.core.extensions.navigate
+import com.navas.lbscan.core.extensions.toast
 import com.navas.lbscan.core.recycler_adapter.BluetoothDevicesAdapter
 import com.navas.lbscan.databinding.HomeFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,7 +29,6 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
 
     companion object{
         private const val REQUEST_ENABLE_BLUETOOTH = 1
-        private const val DEVICE_PARCEALIZE = "device"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -36,7 +38,7 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
     }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.apply {
+        binding.inside {
             searchDevices.setOnClickListener {
                 viewModel.searchDevices()
             }
@@ -95,9 +97,7 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
             RESULT_CANCELED->{
                 when(requestCode){
                     REQUEST_ENABLE_BLUETOOTH->{
-                        message {
-                            "Você precisa ativar o bluetooth antes, né !!!"
-                        }
+                        toast("Você precisa ativar o bluetooth antes, né !!!")
                     }
                 }
             }
@@ -105,7 +105,7 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
     }
 
     override fun onConnectRequest(device: BDevice) {
-        findNavController().navigate(HomeFragmentDirections.homeToDeviceInformations(device))
+        navigate(HomeFragmentDirections.homeToDeviceInformations(device))
     }
 
     private fun message(m: ()-> String){
