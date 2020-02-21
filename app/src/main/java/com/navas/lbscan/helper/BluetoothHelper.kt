@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
 import com.navas.lbscan.core.entities.BDevice
+import com.navas.lbscan.core.extensions.hasValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.delay
@@ -20,41 +21,26 @@ class BluetoothHelper(private val bluetoothAdapter: BluetoothAdapter) {
 
     fun isBluetoothActived() = bluetoothAdapter.isEnabled
 
-    suspend fun startLBScanAsync(): Deferred<List<BDevice>>{
+    suspend fun startLBScanAsync(): List<BDevice>{
         val devices = mutableListOf<BDevice>()
-        val deferred = CompletableDeferred<List<BDevice>>()
 
         leScanner.startScan(object: ScanCallback(){
             override fun onScanResult(callbackType: Int, result: ScanResult?) {
-                val device = result!!.device
+                val device = BDevice(result?.device, result?.rssi)
 
-                val sameDevice = devices.filter {
-                    it.bluetoothDevice.address == device.address
-                }
-                if(sameDevice.isNotEmpty()){
-                    val index = devices.indexOf(sameDevice[0])
-                    devices[index] = BDevice(device, result.rssi)
-                }else{
-                    val newDevice = BDevice(device, result.rssi)
-                    devices.add(newDevice)
-                }
+                devices.hasValue{
+                    it.bluetoothDevice!!.address == device.bluetoothDevice!!.address
+                }?.run {
+                    bluetoothDevice = device.bluetoothDevice
+                } ?: {
+                    devices.add(device)
+                }()
             }
         })
+
         delay(10000)
 
-        val cancelDeferred = CompletableDeferred<String>()
-
-        leScanner.stopScan(object: ScanCallback(){
-            override fun onScanResult(callbackType: Int, result: ScanResult?) {
-                cancelDeferred.complete("Complete")
-            }
-        })
-
-        //println(cancelDeferred.await())
-
-        return deferred.apply {
-            complete(devices)
-        }
+        return devices
     }
 
 }

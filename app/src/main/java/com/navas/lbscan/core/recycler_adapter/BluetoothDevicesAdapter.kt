@@ -3,6 +3,7 @@ package com.navas.lbscan.core.recycler_adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.navas.lbscan.R
 import com.navas.lbscan.core.entities.BDevice
 import com.navas.lbscan.databinding.BluetoothRowAdapterBinding
 
@@ -22,18 +23,17 @@ class BluetoothDevicesAdapter(
 
         fun bindView(device: BDevice){
 
-            device.apply {
-                binding.macAddress.text = device.bluetoothDevice.address
-                binding.name.text = device.bluetoothDevice.name ?: "Sem nome"
-                binding.strength.text = "${device.rssi}"
-
-                binding.apply {
-                    connectButton.setOnClickListener {
-                        callback.onConnectRequest(device)
-                    }
+            binding.macValue.text = device.bluetoothDevice?.address
+            binding.nameValue.text = device.bluetoothDevice?.name ?: "Sem nome"
+            binding.rssiValue.text = "${device.rssi}"
+            binding.rssiContainer.apply {
+                background = resources.getDrawable(getDrawable(device.rssi ?: 0), null)
+            }
+            binding.apply {
+                connectDevice.setOnClickListener {
+                    callback.onConnectRequest(device)
                 }
             }
-
         }
 
     }
@@ -49,4 +49,12 @@ class BluetoothDevicesAdapter(
     interface Callback{
         fun onConnectRequest(device: BDevice)
     }
+
+    fun getDrawable(strength: Int): Int = when(strength){
+        in 0 downTo -30-> R.drawable.rssi_green
+        in -31 downTo -40->R.drawable.rssi_yellow
+        else-> R.drawable.rssi_red
+    }
+
+
 }

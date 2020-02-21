@@ -1,6 +1,5 @@
 package com.navas.lbscan.activity
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,11 +8,8 @@ import com.navas.lbscan.R
 import com.navas.lbscan.core.broadcast.DeviceDataReceiver
 import com.navas.lbscan.core.extensions.sendBroadCast
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-
-    val context: Context by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

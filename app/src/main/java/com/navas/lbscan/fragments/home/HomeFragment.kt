@@ -5,9 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -31,6 +29,11 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
         private const val REQUEST_ENABLE_BLUETOOTH = 1
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         HomeFragmentBinding.inflate(inflater, container, false).apply {
         binding = this
@@ -38,18 +41,26 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
     }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.inside {
-            searchDevices.setOnClickListener {
-                viewModel.searchDevices()
-            }
-        }
+        setupObservers()
     }
 
-    override fun onResume() {
-        viewModel.homeViewState.observe(this, homeViewStateObserver)
-        viewModel.isLoading.observe(this, isLoadingObserver)
-        viewModel.lbDevices.observe(this, lbDevicesObserver)
-        super.onResume()
+    private fun setupObservers(){
+        viewModel.homeViewState.observe(viewLifecycleOwner, homeViewStateObserver)
+        viewModel.isLoading.observe(viewLifecycleOwner, isLoadingObserver)
+        viewModel.lbDevices.observe(viewLifecycleOwner, lbDevicesObserver)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+        setupMenuActions(menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setupMenuActions(menu: Menu){
+        menu.findItem(R.id.action_menu).setOnMenuItemClickListener {
+            viewModel.searchDevices()
+            true
+        }
     }
 
     private val homeViewStateObserver = Observer<HomeViewState>{
@@ -72,12 +83,12 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
 
     private val isLoadingObserver = Observer<Boolean>{
         binding.loading.root.byValue(it)
+        binding.recyclerView.byValue(!it)
     }
 
     private val lbDevicesObserver = Observer<List<BDevice>>{ devices->
         binding.recyclerView.takeIf {
-            val result = (it.adapter is BluetoothDevicesAdapter)
-            !result
+            (it.adapter is BluetoothDevicesAdapter).not()
         }?.apply {
             adapter = BluetoothDevicesAdapter(mutableListOf(), this@HomeFragment)
         }
@@ -106,9 +117,5 @@ class HomeFragment : Fragment(), BluetoothDevicesAdapter.Callback{
 
     override fun onConnectRequest(device: BDevice) {
         navigate(HomeFragmentDirections.homeToDeviceInformations(device))
-    }
-
-    private fun message(m: ()-> String){
-        Snackbar.make(binding.root, m(), Snackbar.LENGTH_LONG).show()
     }
 }

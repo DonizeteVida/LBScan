@@ -8,7 +8,7 @@ class HomeModel(private val bluetoothHelper: BluetoothHelper) {
 
     suspend fun searchDevices(): HomeViewState = withContext(Dispatchers.Default){
         if(bluetoothHelper.isBluetoothActived()) {
-            val devices = bluetoothHelper.startLBScanAsync().await()
+            val devices = bluetoothHelper.startLBScanAsync()
             HomeViewState.Data(devices)
         }else{
             HomeViewState.InactiveBluetooth
