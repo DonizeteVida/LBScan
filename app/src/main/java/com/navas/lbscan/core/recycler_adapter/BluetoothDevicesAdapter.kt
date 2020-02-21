@@ -29,10 +29,8 @@ class BluetoothDevicesAdapter(
             binding.rssiContainer.apply {
                 background = resources.getDrawable(getDrawable(device.rssi ?: 0), null)
             }
-            binding.apply {
-                connectDevice.setOnClickListener {
-                    callback.onConnectRequest(device)
-                }
+            binding.root.setOnClickListener {
+                callback.onConnectRequest(device)
             }
         }
 

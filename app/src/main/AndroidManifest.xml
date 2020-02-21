@@ -26,13 +26,18 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <receiver android:name=".core.broadcast.DeviceDataReceiver"
             android:exported="false"
             android:enabled="true"/>
+
+        <service android:name="com.navas.lbscan.core.service.DeviceDataService"
+            android:icon="@drawable/ic_bluetooth_searching_black"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

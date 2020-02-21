@@ -32,14 +32,16 @@ class BluetoothHelper(private val bluetoothAdapter: BluetoothAdapter) {
                     it.bluetoothDevice!!.address == device.bluetoothDevice!!.address
                 }?.run {
                     bluetoothDevice = device.bluetoothDevice
+                    rssi = device.rssi
                 } ?: {
                     devices.add(device)
                 }()
             }
         })
 
-        delay(2500)
 
+        delay(10000)
+        leScanner.stopScan(object: ScanCallback(){})
         return devices
     }
 

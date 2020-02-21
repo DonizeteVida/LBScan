@@ -1,55 +1,54 @@
 package com.navas.lbscan.activity
 
+import android.Manifest
 import android.os.Bundle
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.navas.lbscan.R
-import com.navas.lbscan.core.broadcast.DeviceDataReceiver
-import com.navas.lbscan.core.extensions.sendBroadCast
+import com.navas.lbscan.core.extensions.compactGetColor
 import kotlinx.android.synthetic.main.activity_main.*
+
+val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    var control = true
+    lateinit var navController: NavController
+
+    companion object{
+        private const val REQUEST_PERMISSIONS_CODE = 123
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setSupportActionBar(toolbar)
-        upActionBar()
-        findNavController(R.id.nav_host).apply {
+        navController = findNavController(R.id.nav_host)
+
+        navController.apply {
             addOnDestinationChangedListener(this@MainActivity)
+            setupActionBarWithNavController(this)
+        }
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS_CODE)
+
+        window.apply {
+            navigationBarColor = compactGetColor(R.color.colorPrimaryDark)
         }
     }
 
-    override fun onSupportNavigateUp() = findNavController(R.id.nav_host).navigateUp()
-
-    private fun AppCompatActivity.upActionBar() = NavigationUI.setupActionBarWithNavController(this, findNavController( R.id.nav_host))
-
-    override fun onResume() {
-        sendBroadCast(DeviceDataReceiver::class.java)
-        super.onResume()
-    }
+    override fun onSupportNavigateUp() = navController.navigateUp()
 
     override fun onDestinationChanged(
         controller: NavController,
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        control = !control
 
-        if(control){
-            AnimationUtils.loadAnimation(this, R.anim.right_to_center).also {
-                toolbar.startAnimation(it)
-            }
-        }else{
-            AnimationUtils.loadAnimation(this, R.anim.center_to_left).also {
-                toolbar.startAnimation(it)
-            }
-        }
     }
 }
+

@@ -7,9 +7,10 @@
         tools:context=".fragments.device_informations.DeviceInformationsFragment">
 
         <TextView
+            android:textSize="64sp"
+            android:id="@+id/rssi"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Hello" />
+            android:layout_height="wrap_content"/>
 
     </FrameLayout>
 </layout>
