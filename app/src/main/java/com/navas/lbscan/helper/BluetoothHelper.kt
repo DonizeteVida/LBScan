@@ -38,7 +38,7 @@ class BluetoothHelper(private val bluetoothAdapter: BluetoothAdapter) {
             }
         })
 
-        delay(10000)
+        delay(2500)
 
         return devices
     }

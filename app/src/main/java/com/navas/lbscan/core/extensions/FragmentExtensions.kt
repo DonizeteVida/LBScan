@@ -1,7 +1,6 @@
 package com.navas.lbscan.core.extensions
 
 import androidx.fragment.app.Fragment
-import androidx.navigation.AnimBuilder
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -14,7 +13,6 @@ private val navOptions = NavOptions.Builder().apply{
     setPopExitAnim(R.anim.center_to_right)
 }.build()
 
-fun Fragment.navigate(directions: NavDirections, options: NavOptions = navOptions) =
-    findNavController().navigate(directions, options)
+fun Fragment.navigate(directions: NavDirections, options: NavOptions = navOptions) = findNavController().navigate(directions, options)
 
 fun Fragment.toast(message: String) = context?.toast(message)
